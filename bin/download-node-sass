@@ -34,8 +34,6 @@ async function main() {
         downloadFile(name, browser_download_url);
 
         console.log('downloaded asset', { name });
-
-        process.exit(0);
     }
 }
 
