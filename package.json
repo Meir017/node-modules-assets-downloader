@@ -2,7 +2,7 @@
     "name": "node-sass-downloader",
     "description": "description",
     "authors": "Meir Blachman",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "bin": {
         "download-node-sass": "bin/download-node-sass"
     },
