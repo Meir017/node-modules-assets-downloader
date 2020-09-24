@@ -47,4 +47,9 @@ async function downloadFile(filename, url) {
         .pipe(fs.createWriteStream(fullPath));
 }
 
-main();
+main()
+    .catch(error => {
+        console.error("ERROR");
+        console.error(error);
+        process.exit(1);
+    });
