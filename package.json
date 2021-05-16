@@ -1,10 +1,10 @@
 {
-    "name": "node-sass-downloader",
+    "name": "node-modules-assets-downloader",
     "description": "description",
     "authors": "Meir Blachman",
     "version": "1.0.2",
     "bin": {
-        "download-node-sass": "bin/download-node-sass"
+        "download-node-modules-assets": "bin/download-node-modules-assets"
     },
     "dependencies": {
         "@types/node": "^10.5.2",
