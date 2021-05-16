@@ -1,6 +1,7 @@
 // @ts-check
 
 const { GitHubDownloader, CypressDownloader } = require('./downloader');
+const PlaywrightDownloader = require('./downloaders/playwright');
 
 const modulesRepositoryMapping = {
     'node-sass': 'sass',
@@ -26,7 +27,6 @@ async function githubReleaseHandler(moduleName, version) {
 }
 
 /**
- * 
  * @param {string} version 
  */
 async function cypressHandler(version) {
@@ -36,6 +36,20 @@ async function cypressHandler(version) {
         downloadsDirectory,
         downloadParallelism: 8,
         version: version
+    });
+
+    await downloader.download();
+}
+
+/**
+ * @param {string} version 
+ */
+async function playwrightHandler(version) {
+    const downloadsDirectory = `./playwright-assets`;
+    const downloader = new PlaywrightDownloader({
+        downloadsDirectory,
+        downloadParallelism: 1,
+        version
     });
 
     await downloader.download();
@@ -65,6 +79,8 @@ function getHandler(moduleName, moduleVersion) {
             return createGithubReleaseHandler(moduleName);
         case 'cypress':
             return cypressHandler;
+        case 'playwright':
+            return playwrightHandler;
         default:
             break;
     }
