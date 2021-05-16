@@ -1,20 +1,12 @@
 #!/usr/bin/env node
 
-const request = require('request-promise');
-const fs = require('fs');
-const path = require('path');
-const [, , moduleName, nodeSassVersion] = process.argv;
+const [, , moduleName, moduleVersion] = process.argv;
 
-const handlers = require('../src/handlers');
+const { getHandler } = require('../src/handlers');
 
-if (!nodeSassVersion || !nodeSassVersion.startsWith('v')) {
-    console.error('usage: download-node-modules-assets <version>');
-    process.exit(1);
-}
+const handler = getHandler(moduleName, moduleVersion);
 
-const handler = handlers.getHandler(moduleName);
-
-handler(nodeSassVersion)
+handler(moduleVersion)
     .catch(error => {
         console.error("ERROR");
         console.error(error);
