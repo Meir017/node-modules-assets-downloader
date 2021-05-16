@@ -8,6 +8,8 @@ const modulesRepositoryMapping = {
     'node-sass': 'sass',
 };
 
+const downloadParallelism = 8;
+
 /**
  * @param {string} moduleName 
  * @param {string} version 
@@ -31,24 +33,38 @@ async function githubReleaseHandler(moduleName, version) {
         assets: release.assets.length,
         version
     });
+    const downloads = [];
+    let i = 0;
     for (const { name, browser_download_url } of release.assets) {
         console.log('downloading asset...', { name });
 
-        downloadFile(name, browser_download_url);
-        await new Promise((res) => setTimeout(res, 1000));
+        downloads.push(downloadFile(name, browser_download_url).then(() => {
+            console.log('downloaded asset', { name });
+        }));
 
-        console.log('downloaded asset', { name });
+        if (downloads.length % downloadParallelism === 0) {
+            await Promise.all(downloads);
+        }
+
+        ++i;
     }
-
+    await Promise.all(downloads);
 
     async function downloadFile(filename, url) {
-        const fullPath = path.join(downloadsDirectory, filename);
-        if (fs.existsSync(fullPath)) {
-            console.log('file already exists', { filename });
-            return;
-        };
-        request(url, { resolveWithFullResponse: true, encoding: null })
-            .pipe(fs.createWriteStream(fullPath));
+        return new Promise(async (resolve, reject) => {
+            const fullPath = path.join(downloadsDirectory, filename);
+            if (fs.existsSync(fullPath) && fs.statSync(fullPath).size === 0) {
+                console.log('empty file, deleting and retrying', { filename });
+                fs.unlinkSync(fullPath);
+            } else if (fs.existsSync(fullPath)) {
+                console.log('file already exists', { filename });
+                return;
+            }
+            const stream = request(url, { resolveWithFullResponse: true, encoding: null })
+                .pipe(fs.createWriteStream(fullPath));
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
     }
 }
 
