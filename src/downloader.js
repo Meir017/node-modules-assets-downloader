@@ -64,6 +64,15 @@ class Downloader {
             stream.on('error', reject);
         });
     }
+
+    async getJson(url) {
+        return await request(url, {
+            headers: {
+                'User-Agent': `node-modules-assets-downloader`
+            },
+            json: true
+        });
+    }
 }
 
 class GitHubDownloader extends Downloader {
@@ -87,12 +96,7 @@ class GitHubDownloader extends Downloader {
 
         if (!fs.existsSync(downloadsDirectory)) fs.mkdirSync(downloadsDirectory);
 
-        const release = await request(tagUrl, {
-            json: true,
-            headers: {
-                'User-Agent': `download-${this.repository}`
-            }
-        });
+        const release = await this.getJson(tagUrl);
 
         console.log('downloading release assets', {
             assets: release.assets.length,
@@ -117,7 +121,7 @@ class CypressDownloader extends Downloader {
 
     async getDownloadAssets() {
         const cypressUrl = 'https://download.cypress.io/desktop.json/';
-        const cypressPackages = await request(cypressUrl, { json: true });
+        const cypressPackages = await this.getJson(cypressUrl);
 
         const versionPlaceholder = cypressPackages.version;
         return Object.entries(cypressPackages.packages).map(([key, value]) => ({
