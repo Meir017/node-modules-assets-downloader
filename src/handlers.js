@@ -1,14 +1,10 @@
 // @ts-check
 
-const request = require('request-promise');
-const fs = require('fs');
-const path = require('path');
+const { GitHubDownloader, CypressDownloader } = require('./downloader');
 
 const modulesRepositoryMapping = {
     'node-sass': 'sass',
 };
-
-const downloadParallelism = 8;
 
 /**
  * @param {string} moduleName 
@@ -16,56 +12,33 @@ const downloadParallelism = 8;
  */
 async function githubReleaseHandler(moduleName, version) {
 
-    const baseUrl = `https://api.github.com/repos/${modulesRepositoryMapping[moduleName]}/${moduleName}/releases/tags`;
-    const tagUrl = `${baseUrl}/${version}`;
     const downloadsDirectory = `./${moduleName}-assets`;
 
-    if (!fs.existsSync(downloadsDirectory)) fs.mkdirSync(downloadsDirectory);
-
-    const release = await request(tagUrl, {
-        json: true,
-        headers: {
-            'User-Agent': `download-${moduleName}`
-        }
+    const downloader = new GitHubDownloader({
+        downloadsDirectory,
+        repository: moduleName,
+        username: modulesRepositoryMapping[moduleName],
+        version: version,
+        downloadParallelism: 8
     });
 
-    console.log('downloading release assets', {
-        assets: release.assets.length,
-        version
+    await downloader.download();
+}
+
+/**
+ * 
+ * @param {string} version 
+ */
+async function cypressHandler(version) {
+    const downloadsDirectory = `./cypress-assets`;
+
+    const downloader = new CypressDownloader({
+        downloadsDirectory,
+        downloadParallelism: 8,
+        version: version
     });
-    const downloads = [];
-    let i = 0;
-    for (const { name, browser_download_url } of release.assets) {
-        console.log('downloading asset...', { name });
 
-        downloads.push(downloadFile(name, browser_download_url).then(() => {
-            console.log('downloaded asset', { name });
-        }));
-
-        if (downloads.length % downloadParallelism === 0) {
-            await Promise.all(downloads);
-        }
-
-        ++i;
-    }
-    await Promise.all(downloads);
-
-    async function downloadFile(filename, url) {
-        return new Promise(async (resolve, reject) => {
-            const fullPath = path.join(downloadsDirectory, filename);
-            if (fs.existsSync(fullPath) && fs.statSync(fullPath).size === 0) {
-                console.log('empty file, deleting and retrying', { filename });
-                fs.unlinkSync(fullPath);
-            } else if (fs.existsSync(fullPath)) {
-                console.log('file already exists', { filename });
-                return;
-            }
-            const stream = request(url, { resolveWithFullResponse: true, encoding: null })
-                .pipe(fs.createWriteStream(fullPath));
-            stream.on('finish', resolve);
-            stream.on('error', reject);
-        });
-    }
+    await downloader.download();
 }
 
 /**
@@ -79,12 +52,19 @@ function createGithubReleaseHandler(moduleName) {
 
 /**
  * @param {string} moduleName 
+ * @param {string} moduleVersion
  */
-function getHandler(moduleName) {
+function getHandler(moduleName, moduleVersion) {
     switch (moduleName) {
         case 'node-sass':
-            return createGithubReleaseHandler(moduleName);
+            if (!moduleVersion.startsWith('v')) {
+                console.error('usage: download-node-modules-assets <version>');
+                process.exit(1);
+            }
 
+            return createGithubReleaseHandler(moduleName);
+        case 'cypress':
+            return cypressHandler;
         default:
             break;
     }
