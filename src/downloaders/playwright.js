@@ -1,6 +1,7 @@
 const { Downloader } = require("../downloader");
 const util = require('util');
 
+// copied from https://github.com/microsoft/playwright/blob/v1.11.0/src/utils/registry.ts#L107
 const DOWNLOAD_URLS = {
     'chromium': {
         'ubuntu18.04': '%s/builds/chromium/%s/chromium-linux.zip',
