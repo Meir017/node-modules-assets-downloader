@@ -1,5 +1,7 @@
 # node-modules-assets-downloader
 
+[![npm version](https://img.shields.io/npm/v/node-modules-assets-downloader.svg?style=flat)](https://www.npmjs.com/package/node-modules-assets-downloader)
+
 downloads the asserts required by node_modules
 
 ## Install
