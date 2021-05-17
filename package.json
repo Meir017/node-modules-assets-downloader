@@ -2,7 +2,7 @@
     "name": "node-modules-assets-downloader",
     "description": "description",
     "authors": "Meir Blachman",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "bin": {
         "download-node-modules-assets": "bin/download-node-modules-assets"
     },
