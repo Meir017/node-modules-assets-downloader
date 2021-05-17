@@ -17,7 +17,7 @@ class Downloader {
     }
 
     async download() {
-        if (!fs.existsSync(this.downloadsDirectory)) fs.mkdirSync(this.downloadsDirectory);
+        if (!fs.existsSync(this.downloadsDirectory)) fs.mkdirSync(this.downloadsDirectory, { recursive: true });
 
         const downloads = [];
         let i = 0;
@@ -31,8 +31,8 @@ class Downloader {
         for (const { name, url } of assets) {
             console.log('downloading asset...', { name });
 
-            downloads.push(this.downloadFile(name, url).then(() => {
-                console.log('downloaded asset', { name });
+            downloads.push(this.downloadFile(name, url).then(({ size, duration }) => {
+                console.log('downloaded asset', { name, size, duration });
             }));
 
             if (downloads.length % this.downloadParallelism === 0) {
@@ -56,12 +56,19 @@ class Downloader {
                 fs.unlinkSync(fullPath);
             } else if (fs.existsSync(fullPath)) {
                 console.log('file already exists', { filename });
-                return;
+                resolve({ size: fs.statSync(fullPath).size, duration: 0 });
             }
+
+            const start = new Date();
             const stream = request(url, { resolveWithFullResponse: true, encoding: null })
                 .pipe(fs.createWriteStream(fullPath));
-            stream.on('finish', resolve);
+            stream.on('finish', () => {
+                const end = new Date();
+                const duration = end - start;
+                resolve({ size: stream.bytesWritten, duration });
+            });
             stream.on('error', reject);
+
         });
     }
 
@@ -92,16 +99,8 @@ class GitHubDownloader extends Downloader {
     async getDownloadAssets() {
         const baseUrl = `https://api.github.com/repos/${this.username}/${this.repository}/releases/tags`;
         const tagUrl = `${baseUrl}/${this.version}`;
-        const downloadsDirectory = `./${this.repository}-assets`;
-
-        if (!fs.existsSync(downloadsDirectory)) fs.mkdirSync(downloadsDirectory);
 
         const release = await this.getJson(tagUrl);
-
-        console.log('downloading release assets', {
-            assets: release.assets.length,
-            version: this.version
-        });
 
         return release.assets.map(asset => ({
             name: asset.name,
