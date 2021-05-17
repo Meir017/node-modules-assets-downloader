@@ -96,7 +96,7 @@ class PlaywrightDownloader extends Downloader {
         Object.entries(DOWNLOAD_URLS).forEach(([key, value]) => {
             Object.keys(value).forEach(platform => {
                 const urlTemplate = DOWNLOAD_URLS[key][platform];
-                if (!urls.has(urlTemplate) && typeof urlTemplate === 'string') {
+                if (!urls.has(urlTemplate) && typeof urlTemplate === 'string' && browsers[key]) {
                     urls.add(urlTemplate);
                     assets.push({
                         name: `${key}-${platform}`,
