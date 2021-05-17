@@ -29,10 +29,10 @@ class Downloader {
         });
 
         for (const { name, url } of assets) {
-            console.log('downloading asset...', { name });
+            console.log('downloading asset...', { name, url });
 
             downloads.push(this.downloadFile(name, url).then(({ size, duration }) => {
-                console.log('downloaded asset', { name, size, duration });
+                console.log('downloaded asset', { name, url, size, duration });
             }));
 
             if (downloads.length % this.downloadParallelism === 0) {

@@ -16,7 +16,7 @@ const DOWNLOAD_URLS = {
     },
     'firefox': {
         'ubuntu18.04': '%s/builds/firefox/%s/firefox-ubuntu-18.04.zip',
-        'ubuntu20.04': '%s/builds/firefox/%s/firefox-ubuntu-20.04.zip',
+//        'ubuntu20.04': '%s/builds/firefox/%s/firefox-ubuntu-20.04.zip',
         'mac10.13': '%s/builds/firefox/%s/firefox-mac-10.14.zip',
         'mac10.14': '%s/builds/firefox/%s/firefox-mac-10.14.zip',
         'mac10.15': '%s/builds/firefox/%s/firefox-mac-10.14.zip',
@@ -40,7 +40,6 @@ const DOWNLOAD_URLS = {
         'ubuntu18.04': '%s/builds/webkit/%s/webkit-ubuntu-18.04.zip',
         'ubuntu20.04': '%s/builds/webkit/%s/webkit-ubuntu-20.04.zip',
         'mac10.13': undefined,
-        'mac10.14': '%s/builds/deprecated-webkit-mac-10.14/%s/deprecated-webkit-mac-10.14.zip',
         'mac10.15': '%s/builds/webkit/%s/webkit-mac-10.15.zip',
         'mac11': '%s/builds/webkit/%s/webkit-mac-10.15.zip',
         'mac11-arm64': '%s/builds/webkit/%s/webkit-mac-11.0-arm64.zip',
@@ -91,14 +90,18 @@ class PlaywrightDownloader extends Downloader {
 
         const downloadHost = 'https://playwright.azureedge.net';
 
+        const urls = new Set();
         const assets = [];
         Object.entries(DOWNLOAD_URLS).forEach(([key, value]) => {
             Object.keys(value).forEach(platform => {
                 const urlTemplate = DOWNLOAD_URLS[key][platform];
-                assets.push({
-                    name: `${key}-${platform}`,
-                    url: util.format(urlTemplate, downloadHost, browsers[key])
-                });
+                if (!urls.has(urlTemplate) && typeof urlTemplate === 'string' && browsers[key]) {
+                    urls.add(urlTemplate);
+                    assets.push({
+                        name: `${key}-${platform}`,
+                        url: util.format(urlTemplate, downloadHost, browsers[key])
+                    });
+                }
             });
         });
 

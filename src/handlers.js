@@ -48,7 +48,7 @@ async function playwrightHandler(version) {
     const downloadsDirectory = `./playwright-assets`;
     const downloader = new PlaywrightDownloader({
         downloadsDirectory,
-        downloadParallelism: 1,
+        downloadParallelism: 8,
         version
     });
 
