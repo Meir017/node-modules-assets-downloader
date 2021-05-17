@@ -5,6 +5,7 @@ const PlaywrightDownloader = require('./downloaders/playwright');
 
 const modulesRepositoryMapping = {
     'node-sass': 'sass',
+    'electron': 'electron'
 };
 
 /**
@@ -70,9 +71,11 @@ function createGithubReleaseHandler(moduleName) {
  */
 function getHandler(moduleName, moduleVersion) {
     switch (moduleName) {
+        case 'electron':
         case 'node-sass':
             if (!moduleVersion.startsWith('v')) {
-                console.error('usage: download-node-modules-assets <version>');
+                console.error('version must be prefixed with v');
+                console.error('Usage: download-node-modules-assets <node-sass|electron> v<version>');
                 process.exit(1);
             }
 
