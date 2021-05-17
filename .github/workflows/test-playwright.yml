@@ -1,0 +1,28 @@
+name: Test playwright
+
+on:
+  pull_request:
+    branches: 
+      - master
+
+jobs:
+  test:
+    name: Test on node ${{ matrix.node_version }} playwright ${{ matrix.playwright-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 14.x
+        playwright-version:
+          - 1.11.0
+          - 1.10.0
+          - 1.9.0
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: node bin/download-node-modules-assets playwright ${{ matrix.playwright-version }}
