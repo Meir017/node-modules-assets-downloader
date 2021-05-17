@@ -91,14 +91,18 @@ class PlaywrightDownloader extends Downloader {
 
         const downloadHost = 'https://playwright.azureedge.net';
 
+        const urls = new Set();
         const assets = [];
         Object.entries(DOWNLOAD_URLS).forEach(([key, value]) => {
             Object.keys(value).forEach(platform => {
                 const urlTemplate = DOWNLOAD_URLS[key][platform];
-                assets.push({
-                    name: `${key}-${platform}`,
-                    url: util.format(urlTemplate, downloadHost, browsers[key])
-                });
+                if (!urls.has(urlTemplate) && typeof urlTemplate === 'string') {
+                    urls.add(urlTemplate);
+                    assets.push({
+                        name: `${key}-${platform}`,
+                        url: util.format(urlTemplate, downloadHost, browsers[key])
+                    });
+                }
             });
         });
 
