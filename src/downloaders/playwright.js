@@ -40,7 +40,6 @@ const DOWNLOAD_URLS = {
         'ubuntu18.04': '%s/builds/webkit/%s/webkit-ubuntu-18.04.zip',
         'ubuntu20.04': '%s/builds/webkit/%s/webkit-ubuntu-20.04.zip',
         'mac10.13': undefined,
-        'mac10.14': '%s/builds/deprecated-webkit-mac-10.14/%s/deprecated-webkit-mac-10.14.zip',
         'mac10.15': '%s/builds/webkit/%s/webkit-mac-10.15.zip',
         'mac11': '%s/builds/webkit/%s/webkit-mac-10.15.zip',
         'mac11-arm64': '%s/builds/webkit/%s/webkit-mac-11.0-arm64.zip',
