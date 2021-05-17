@@ -1,6 +1,6 @@
 # node-modules-assets-downloader
 
-[![npm version](https://img.shields.io/npm/v/node-modules-assets-downloader.svg?style=flat)](https://www.npmjs.com/package/node-modules-assets-downloader)
+[![npm version](https://img.shields.io/npm/v/node-modules-assets-downloader.svg?style=flat)](https://www.npmjs.com/package/node-modules-assets-downloader) [![Test cypress](https://github.com/Meir017/node-modules-assets-downloader/actions/workflows/test-cypress.yml/badge.svg)](https://github.com/Meir017/node-modules-assets-downloader/actions/workflows/test-cypress.yml) [![Test node-sass](https://github.com/Meir017/node-modules-assets-downloader/actions/workflows/test-node-sass.yml/badge.svg)](https://github.com/Meir017/node-modules-assets-downloader/actions/workflows/test-node-sass.yml)
 
 downloads the asserts required by node_modules
 
